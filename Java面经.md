@@ -1242,7 +1242,177 @@ rollbackfor参数：默认只有RunTimeException时才会回滚，设置为rollb
 
 ### 工厂模式
 
+#### 1.简单工厂模式
 
+```java
+// 动物工厂
+public class AnimalFactory {
+    // 创建dog
+    public static Dog createDog() {
+        return new Dog();
+    }
+    
+    // 创建cat
+    public static Cat createCat() {
+        return new Cat();
+    }
+}
+
+Cat cat = AnimalFactory.createCat();
+Dog dog = AnimalFactory.createDog();
+```
+
+缺点：需要创建别的对象时要修改代码
+
+优点：只需要一个工厂来创建对象，代码量少
+
+
+
+#### 2.工厂方法模式
+
+**开闭原则**：对扩展开放，对修改关闭。
+
+```java
+// 抽象工厂
+public interface AnimalFactory {
+    Animal createAnimal();
+}
+
+// cat工厂
+public class CatFactory implements AnimalFactory {
+    @Override
+    public Aniaml createAnimal() {
+        return new Cat();
+    }
+}
+
+// dog工厂
+public class DogFactory implements AnimalFactory {
+    @Override
+    public Aniaml createAnimal() {
+        return new Dog();
+    }
+}
+
+public abstract class Animal {
+    public abstract void eat();
+}
+
+public class Cat extends Animal {
+    @Override
+    public void eat() {
+        System.out.println("猫吃鱼");
+    }
+}
+
+public class Dog extends Animal {
+    @Override
+    public void eat() {
+        System.out.println("狗吃骨头");
+    }
+}
+```
+
+优点：相对简单工厂模式，增加新的类时职需扩展出一个新的工厂类即可，而不需要修改原来的代码
+
+缺点：每一个对象需要一个单独的工厂
+
+
+
+#### 3.抽象工厂模式
+
+简单工厂模式和工厂方法模式都只能创建一类对象->Animal，但如果现在我有多类对象该怎么办？
+
+```java
+// PC类
+public interface PC {
+    void make();
+}
+
+// 小米PC
+public class MiPC implements PC {
+    public MiPC() {
+        this.make();
+    }
+    @Override
+    public void make() {
+        System.out.println("make xiaomi PC!");
+    }
+}
+
+// MAC PC
+public class MAC implements PC {
+    public MAC() {
+        this.make();
+    }
+    @Override
+    public void make() {
+        System.out.println("make MAC!");
+    }
+}
+```
+
+```java
+// 手机类
+public interface Phone {
+    void make();
+}
+
+// 小米手机
+public class MiPhone implements Phone {
+    public MiPhone() {
+        this.make();
+    }
+    @Override
+    public void make() {
+        System.out.println("make xiaomi phone!");
+    }
+}
+
+// 苹果手机
+public class IPhone implements Phone {
+    public IPhone() {
+        this.make();
+    }
+    @Override
+    public void make() {
+        System.out.println("make iphone!");
+    }
+}
+```
+
+```java
+public interface AbstractFactory {
+    Phone makePhone();
+    PC makePC();
+}
+
+// 小米工厂
+public class XiaoMiFactory implements AbstractFactory{
+    @Override
+    public Phone makePhone() {
+        return new MiPhone();
+    }
+    @Override
+    public PC makePC() {
+        return new MiPC();
+    }
+}
+
+// MAC工厂
+public class AppleFactory implements AbstractFactory {
+    @Override
+    public Phone makePhone() {
+        return new IPhone();
+    }
+    @Override
+    public PC makePC() {
+        return new MAC();
+    }
+}
+```
+
+此处对产品分组，可分为小米组和苹果组，各自包含手机和电脑两类产品。此时只需一个小米工厂生产小米组的产品，苹果工厂生产苹果组的产品。**即将产品进行分组，每组中的不同产品由同一个工厂类的不同方法来创建。**
 
 -----
 
