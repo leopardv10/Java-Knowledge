@@ -961,7 +961,7 @@ http://redisbook.com/preview/object/hash.html
 
 ### Redis的IO多路复用
 
-- 网络模块通过单个线程监控多个网络请求状态，直到有数据可读可写时，才去通知操作模块的线程去处理数据。
+- ##### 网络模块通过单个线程监控多个网络请求状态，直到有数据可读可写时，才去通知操作模块的线程去处理数据。
 
 https://zhuanlan.zhihu.com/p/115912936
 
@@ -1242,6 +1242,11 @@ rollbackfor参数：默认只有RunTimeException时才会回滚，设置为rollb
 
 ### 工厂模式
 
+好处：
+
+- 解耦：将对象创建和使用过程分开。
+- 降低重复代码，方便维护。
+
 #### 1.简单工厂模式
 
 ```java
@@ -1418,7 +1423,10 @@ public class AppleFactory implements AbstractFactory {
 
 ### 单例模式
 
-好处：保证系统中一个类只有一个实例，方便对实例个数的控制并节约系统资源。比如windows的任务管理器。
+好处：
+
+- 有些对象只需要一个，比如线程池，日志等，如果有多个实例可能会出现问题。
+- 节省内存空间，避免重复创建和销毁对象。
 
 实现方式：
 
@@ -1468,7 +1476,51 @@ public class AppleFactory implements AbstractFactory {
 
   
 
-  
+
+-----
+
+### 代理模式
+
+#### 1.静态代理
+
+代理对象和目标对象实现同一个接口
+
+```java
+// 接口
+public interface IUserDao {
+    public void save();
+}
+
+// 目标对象
+public class UserDao implements IUserDao{
+    @Override
+    public void save() {
+        System.out.println("保存数据");
+    }
+}
+
+// 代理对象
+public class UserDaoProxy implements IUserDao{
+    private IUserDao target;
+    
+    public UserDaoProxy(IUserDao target) {
+        this.target = target;
+    }
+    
+    @Override
+    public void save() {
+        System.out.println("开启事务");//扩展了额外功能
+        target.save();
+        System.out.println("提交事务");
+    }
+}
+```
+
+#### 2.JDK动态代理
+
+
+
+#### 3.cglib动态代理
 
 -----
 
