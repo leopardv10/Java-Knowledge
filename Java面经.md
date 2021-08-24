@@ -94,6 +94,8 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 - SynchronizedList：使用同步代码块的方式，效率比vector高
 - CopyOnWriteArrayList：写时加锁，读不加锁
 
+
+
 #### 2.ConcurrentHashMap如何实现线程安全
 
 - JDK1.7：segment分段锁（可重入锁，实现了ReentrantLock），每个segment包含一个HashEntry数组，每个HashEntry是一个链表因此在ConcurrentHashMap查询一个元素的过程需要进行两次Hash操作，如下所示：
@@ -105,11 +107,15 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 - JDK1.8：采用CAS机制和synchronized关键字
   - CAS：put数据时首先计算出对应位置，如果当前这个位置的Node为null，则通过CAS方式的方法写入。所谓的CAS，即即compareAndSwap，执行CAS操作的时候，将内存位置的值与预期原值比较，如果相匹配，那么处理器会自动将该位置值更新为新值，否则，处理器不做任何操作。
   - synchronized：当头结点不为null时，则使用该头结点加锁，这样就能多线程去put hashCode相同的时候不会出现数据丢失的问题。
+  
+  
 
 #### 3.ArrayList扩容
 
 - 初始化时如果不指定容量则默认为10。
 - 若arraylist容量无法满足新元素的要求则按1.5倍扩容，扩容时用Arrays.copyOf方法将旧数组复制到新数组，若扩容后的容量仍小于最低的存储要求，则取值为最低存储要求。
+
+
 
 #### 4.HashMap
 
@@ -129,6 +135,17 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
 - 一句话，HashMap的长度为2的幂次方的原因是为了减少Hash碰撞，尽量使Hash算法的结果均匀分布
 - 任何一个2的倍数n，n - 1的二进制每一位都是1，这样按位与运算的结果就完全取决于hashcode
+
+
+
+#### 5.乐观锁和悲观锁
+
+- 乐观锁：适用于读多写少的情况，因为这样比较当前值和预期值时发生冲突的情况就比较少，省去了加锁的开销。但如果冲突经常发生就会因为自旋导致性能下降，因此不适合写操作多的场景。
+  - MVCC：
+  - CAS：
+- 悲观锁：
+  - Reentrantlock
+  - synchronized
 
 -------
 
