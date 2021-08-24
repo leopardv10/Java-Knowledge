@@ -161,6 +161,11 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
 - workQueue：工作队列，存放提交的等待任务，有大小限制
 
+  - ArrayBlockingQueue：有界队列
+  - LinkedBlockingQueue：无界队列
+  - SynchronousQueue：不存储元素，一个put操作必须等待take操作，否则不能添加
+  - PriorityBlockingQueue：优先级队列，可设置任务优先级
+
 - handler：拒绝策略，有四种取值
 
   - AbortPolicy：默认，丢弃任务并抛出异常
@@ -180,13 +185,13 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 - 如果队列已满，则在非corePool中创建新的线程
 - 如果新创建的线程使当前运行的线程数超过maximumPoolSize，执行handler策略
 
------
+
 
 #### 4.volatile关键字
 
 可以保证变量的可见性，以及防止指令重排序；
 
------
+
 
 #### 5.线程状态
 
@@ -197,7 +202,7 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 - Timed waiting（计时等待）：调用有超时参数的方法后进入计时等待，比如Thread.sleep。
 - Terminate：run方法正常退出或异常终止。
 
------
+
 
 #### 6.线程池中的阻塞队列
 
@@ -213,25 +218,25 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
 https://blog.csdn.net/vincent_wen0766/article/details/108593587
 
------
+
 
 #### 7.AQS
 
 
 
-------
+
 
 #### 8.synchronized锁升级
 
 锁状态：无锁 -> 偏向锁 -> 轻量级锁（自旋锁） -> 重量级锁，且只能升级不能降级。
 
-- 偏向锁：没有发生锁竞争，及只有一个线程获取锁时为偏向锁。这种情况下，线程执行完同步代码块时不会释放锁，当该线程再次到达同步代码块时，则不需要重新加锁。
+- 偏向锁：初次执行到synchronized代码块时锁变成偏向锁。没有发生锁竞争，及只有一个线程获取锁时为偏向锁。这种情况下，线程执行完同步代码块时不会释放锁，当该线程再次到达同步代码块时，则不需要重新加锁。
 - 轻量级锁：当锁是偏向锁时被其它线程访问，锁就升级为轻量级锁，其它线程会通过自旋的方式来尝试获得锁，线程不会阻塞，从而提升性能。
 - 如果锁竞争严重，某个线程自旋次数达到最大值，便会将锁升级为重量级锁，此时等待获取锁的线程会进入阻塞状态。
 
 https://segmentfault.com/a/1190000022904663
 
-------
+
 
 #### 9.synchronized
 
@@ -240,7 +245,7 @@ https://segmentfault.com/a/1190000022904663
 - synchronized 同步语句块使⽤的是 monitorenter 和 monitorexit 指令，其中 monitorenter指令指向同步代码块的开始位置，monitorexit 指令则指明同步代码块的结束位置。当执行monitorenter时线程会试图获取monitor（monitor对象存在于每个Java对象的对象头中）。当计数器为零时就可成功获取，然后计数器+1。执行monitorexist指令时，锁计数器-1，当计数器为0时表示锁被释放。如果获取锁失败线程就会阻塞。
 - synchronized修饰同步方法时是通过ACC_SYNCHRONIZED标识来指明该方法是一个同步方法。
 
------
+
 
 #### 10.ReentrantLock
 
@@ -279,6 +284,8 @@ https://segmentfault.com/a/1190000022904663
 - NewScheduledThreadPool
 
   corePoolSize为传递来的参数，maximumPoolSize为Integer.MAX_VALUE；keepAliveTime为0；unit为：TimeUnit.NANOSECONDS；workQueue为：new DelayedWorkQueue() 一个按超时时间升序排序的队列；适合周期性任务。
+
+
 
 #### 12.上下文切换
 
