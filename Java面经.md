@@ -224,8 +224,6 @@ https://blog.csdn.net/vincent_wen0766/article/details/108593587
 
 
 
-
-
 #### 8.synchronized锁升级
 
 锁状态：无锁 -> 偏向锁 -> 轻量级锁（自旋锁） -> 重量级锁，且只能升级不能降级。
@@ -233,6 +231,10 @@ https://blog.csdn.net/vincent_wen0766/article/details/108593587
 - 偏向锁：初次执行到synchronized代码块时锁变成偏向锁。没有发生锁竞争，及只有一个线程获取锁时为偏向锁。这种情况下，线程执行完同步代码块时不会释放锁，当该线程再次到达同步代码块时，则不需要重新加锁。
 - 轻量级锁：当锁是偏向锁时被其它线程访问，锁就升级为轻量级锁，其它线程会通过自旋的方式来尝试获得锁，线程不会阻塞，从而提升性能。
 - 如果锁竞争严重，某个线程自旋次数达到最大值，便会将锁升级为重量级锁，此时等待获取锁的线程会进入阻塞状态。
+
+> 为什么锁不能降级？
+>
+> 锁升降级效率比较低，如果频繁升降级会对JVM性能造成影响。
 
 https://segmentfault.com/a/1190000022904663
 
@@ -242,7 +244,7 @@ https://segmentfault.com/a/1190000022904663
 
 原理：
 
-- synchronized 同步语句块使⽤的是 monitorenter 和 monitorexit 指令，其中 monitorenter指令指向同步代码块的开始位置，monitorexit 指令则指明同步代码块的结束位置。当执行monitorenter时线程会试图获取monitor（monitor对象存在于每个Java对象的对象头中）。当计数器为零时就可成功获取，然后计数器+1。执行monitorexist指令时，锁计数器-1，当计数器为0时表示锁被释放。如果获取锁失败线程就会阻塞。
+- synchronized同步语句块使⽤的是 monitorenter 和 monitorexit 指令，其中 monitorenter指令指向同步代码块的开始位置，monitorexit 指令则指明同步代码块的结束位置。当执行monitorenter时线程会试图获取monitor（monitor对象存在于每个Java对象的对象头中）。当计数器为零时就可成功获取，然后计数器+1。执行monitorexist指令时，锁计数器-1，当计数器为0时表示锁被释放。如果获取锁失败线程就会阻塞。
 - synchronized修饰同步方法时是通过ACC_SYNCHRONIZED标识来指明该方法是一个同步方法。
 
 
@@ -329,15 +331,21 @@ https://zhuanlan.zhihu.com/p/52845869
 
 ### JVM
 
+
+
 #### 1.JVM内存区域
 
 <img src="C:\Users\leopa\AppData\Roaming\Typora\typora-user-images\image-20210415134044316.png" alt="image-20210415134044316" style="zoom:80%;" />
 
 - 堆：存放对象实例，垃圾收集器管理的区域
+  - OutOfMemoryError
 - 方法区：存储已被虚拟机加载的类型信息、常量、静态变量等
 - 本地方法栈：为虚拟机使用到的本地方法服务（第三方语言写的）
+  - StackOverFlowError：当线程调用一个方法时，jvm压入一个新的栈帧到这个线程的栈中，如果方法的嵌套调用层次太多(如递归调用),就会出现栈溢出。
 - 虚拟机栈：存放方法的信息，操作数（中间变量），方法出口信息等
 - 程序计数器：选取下一条执行的字节码指令
+
+
 
 #### 2.如何判断对象已经死亡
 
@@ -350,6 +358,8 @@ https://zhuanlan.zhihu.com/p/52845869
   > 哪些对象可作为GC Roots：
   >
   > 栈和方法区里引用到的对象
+
+
 
 #### 3.各种引用
 
@@ -369,9 +379,14 @@ https://zhuanlan.zhihu.com/p/52845869
 
   不影响对象的生存时间，唯一的作用是对象被回收时发一个系统通知；
 
---------
+
 
 #### 4.垃圾回收算法
+
+- 标志清除
+- 标记整理
+- 复制算法
+- 分代收集
 
 
 
@@ -393,7 +408,7 @@ https://zhuanlan.zhihu.com/p/52845869
 
   [详见](https://cloud.tencent.com/developer/article/1628085#:~:text=%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B%E5%8F%AA%E6%98%AF%E4%B8%80%E4%B8%AA,%E4%B8%8D%E5%86%8D%E5%A4%9A%E5%81%9A%E8%B5%98%E8%BF%B0%E3%80%82)
 
--------
+
 
 #### 6.双亲委派
 
@@ -406,13 +421,15 @@ https://zhuanlan.zhihu.com/p/52845869
 - 因为双亲委派是向上委托加载的，所以它可以确保类只被加载一次，**避免重复加载**；
 - Java的核心API都是通过启动类加载器进行加载的，如果别人通过定义同样路径的类比如java.lang.Integer，类加载器通过向上委托，两个Integer，那么最终被加载的应该是jdk的Integer类，而并非我们自定义的，这样就**避免了我们恶意篡改核心包的风险**；
 
--------
+
 
 #### 7.什么情况会触发Full GC
 
 - System.gc()方法的调用：调用System.gc()方法会建议JVM进行Full GC，但注意这只是建议，JVM执行不执行是另外一回事儿，不过在大多数情况下会增加Full GC的次数，导致系统性能下降，一般建议不要手动进行此方法的调用，可以通过-XX:+ DisableExplicitGC来禁止RMI调用System.gc。
 - 老年代空间不足
 - Metaspace区内存不足
+
+
 
 #### 8.垃圾收集器
 
@@ -453,12 +470,6 @@ G1收集器：
 - 初始化零值
 - 设置对象头
 - 执行init方法
-
-#### 11.StackOverflowError和OutOfMemoryError
-
-线程调用方法时就会往栈里压入一个栈帧，方法调用完毕时，栈帧出栈，所以无限递归会出现StackOverflowError。
-
-
 
 --------
 
