@@ -457,7 +457,42 @@ JDK1.8默认使用**Parallel Scanvage** + **Parallel Old**
 
 G1收集器：
 
+
+
 #### 9.内存泄漏
+
+在Java中，**内存泄漏**就是存在一些被分配的对象，这些对象有下面两个特点，**首先**，这些对象是可达的，即**在有向图中，存在通路可以与其相连**；**其次**，**这些对象是无用的，即程序以后不会再使用这些对象**。
+
+```java
+void method(){
+    //1.对vector的操作
+    Vector vector = new Vector();
+    for (int i = 1; i<100; i++){
+        Object object = new Object();
+        vector.add(object);
+        object = null;
+    }
+    //2.下面省略与vector无关的其他操作 
+}
+```
+
+- 这里的内存泄露指的是操作1完成后，vector里的object对象就不需要了，但是此时如果发生了GC却不会回收这些object对象，因为vector还在引用他们，但这些object对象已经没用了，这种情况下就会发生内存溢出。
+
+```java
+void method(){
+     //1.对vector的操作
+    Vector vector = new Vector();
+    for (int i = 1; i<100; i++){
+        Object object = new Object();
+        vector.add(object);
+        object = null;
+    }
+    vector = null;
+    //2.下面是与vector无关的其他操作
+}
+```
+
+- 这种情况下，vector操作完后将其赋值为null，此时不再有对象引用这些object，所以就避免了内存泄漏的情况。
 
 
 
@@ -473,11 +508,13 @@ G1收集器：
 
 --------
 
+
+
 ## *Chapter 2 MySQL*
 
 
 
-### MyISAM和InnoDB区别
+### 1. MyISAM和InnoDB区别
 
 - MyISAM只支持表锁，InnoDB支持行锁和表锁；
 - InnoDB支持事务；
@@ -485,107 +522,100 @@ G1收集器：
 - InnoDB支持MVCC；
 - InnoDB是聚簇索引，MyISAM是非聚簇索引；
 
------
 
-### Explain语句
+
+### 2.Explain语句
 
 explain语句显示的字段: id, select_type, table, type, possible_keys, keys, key_len, ref, rows, extra 
 
-#### 1.id
+- id
+  - id相同，执行顺序从上到下。
+  - id不同，id越大优先级越高，优先执行。
 
-- id相同，执行顺序从上到下。
-- id不同，id越大优先级越高，优先执行。
+- select_type：查询类型
+  - SIMPLE：查询中不包括子查询或者UNION；
+  - PRIMARY：查询中若包括复杂的子查询，最外层的标记为PRIMARY；
+  - SUBQUERY：子查询；
+  - DERIVED：子查询中生成的临时表；
+  - UNION：连接两个以上的 SELECT 语句的结果组合到一个结果集合中。
+  - UNION RESULT：UNION的结果。
 
-#### 2.select_type：查询类型
+- <font color=red>**type**</font>：查询类型
 
-- 类型：
+  - 8种类型：all，index，range，ref，eq_ref，const，system
 
-  SIMPLE：查询中不包括子查询或者UNION；
+  - 从好到坏的顺序：system > const > eq_ref > ref > range > index > all
 
-  PRIMARY：查询中若包括复杂的子查询，最外层的标记为PRIMARY；
+  - system当table只有一行数据时出现，实际场景几乎不会出现；const表示通过索引一次就找到了，用于直接按主键或唯一键读取；eq_ref和ref都是两表连接时出现的查询类型；range即为范围查询(eg: where 3 < id < 8)；index为全索引扫描；all为全表扫描。
 
-  SUBQUERY：子查询；
+  - eq_ref`: 想象你有两张桌子。表A包含列(id，text)，其中id是主键。表B具有相同的列(id，text)，其中id是主键。表A包含以下数据：
 
-  DERIVED：子查询中生成的临时表；
+    ```java
+    1, Hello 
+    2, How are you
+    ```
 
-  UNION：连接两个以上的 SELECT 语句的结果组合到一个结果集合中。
+    表B有以下数据：
 
-  UNION RESULT：UNION的结果。
+    ```java
+    1, world!
+    2, you?
+    ```
 
-#### 3.<font color=red>**type**</font>：查询 类型
+    想象一下`eq_ref`为A和B之间的JOIN：
 
-8种类型：all，index，range，ref，eq_ref，const，system
+    ```mysql
+    select A.text, B.text where A.ID = B.ID
+    ```
 
-+ 从好到坏的顺序：system > const > eq_ref > ref > range > index > all
+    这个JOIN非常快，因为对于表A中扫描的每一行，表B中只能有一行满足JOIN条件。一个，不超过一个。那是因为B.id是独一无二的
 
-+ system当table只有一行数据时出现，实际场景几乎不会出现；const表示通过索引一次就找到了，用于直接按主键或唯一键读取；eq_ref和ref都是两表连接时出现的查询类型；range即为范围查询(eg: where 3 < id < 8)；index为全索引扫描；all为全表扫描。
+  - ref` : 现在想象另一个带有列(id，text)的表C，其中id是索引但非`UNIQUE`。表C具有以下数据：
 
-+ `eq_ref`: 想象你有两张桌子。表A包含列(id，text)，其中id是主键。表B具有相同的列(id，text)，其中id是主键。表A包含以下数据：
+    ```java
+    1, John!
+    1, Jack!
+    ```
 
-  ```c
-  1, Hello 
-  2, How are
-  ```
+    想象一下`ref`作为A和C之间的JOIN：
 
-  表B有以下数据：
+    ```mysql
+    select A.text, C.text where A.ID = C.ID
+    ```
 
-  ```c
-  1, world!
-  2, you?
-  ```
+    此JOIN不如前一个快，因为对于表A中扫描的每一行，表C中有几个可能的行，它们可以满足JOIN条件(上面的循环中没有中断)。那是因为C.ID不是独一无二的。
 
-  想象一下`eq_ref`为A和B之间的JOIN：
+  - range：范围查询
 
-  ```c
-  select A.text, B.text where A.ID = B.ID
-  ```
+    ```mysql
+    SELECT * FROM tbl_name WHERE key_column BETWEEN 10 and 20;
+    ```
 
-  这个JOIN非常快，因为对于表A中扫描的每一行，表B中只能有一行满足JOIN条件。一个，不超过一个。那是因为B.id是独一无二的。
+  - index：索引全表扫描，把整个索引树全部查一遍
 
-- `ref` : 现在想象另一个带有列(id，text)的表C，其中id是索引但非`UNIQUE`。表C具有以下数据：
+  - possible_keys, keys
 
-  ```java
-  1, John!
-  1, Jack!
-  ```
+    理论上用到的索引，实际用到的索引。
 
-  想象一下`ref`作为A和C之间的JOIN：
+- key_len
 
-  ```java
-  select A.text, C.text where A.ID = C.ID
-  ```
+  索引字段的最大可能长度，并非实际长度。
 
-  此JOIN不如前一个快，因为对于表A中扫描的每一行，表C中有几个可能的行，它们可以满足JOIN条件(上面的循环中没有中断)。那是因为C.ID不是独一无二的。
+- ref
+
+  显示用到了索引中的哪些列。
+
+- rows
+
+  估算查询到结果需要用到的行数，理论上越少越好。
+
   
-- range：范围查询
 
-  > ```cpp
-  > SELECT * FROM tbl_name WHERE key_column BETWEEN 10 and 20;
-  > ```
+### 3.索引
 
-- index：索引全表扫描，把整个索引树全部查一遍
 
-#### 4.possible_keys, keys
 
-理论上用到的索引，实际用到的索引。
-
-#### 5.key_len
-
-索引字段的最大可能长度，并非实际长度。
-
-#### 6.ref
-
-显示用到了索引中的哪些列。
-
-#### 7.rows
-
-估算查询到结果需要用到的行数，理论上越少越好。
-
----------------------
-
-### 索引
-
-#### 1.索引分类
+#### 3.1索引分类
 
 - 普通索引：无任何限制
 
@@ -604,8 +634,10 @@ explain语句显示的字段: id, select_type, table, type, possible_keys, keys,
   InnoDB使用聚簇索引，叶子结点包含了完整的数据记录。
 
   对于InnoDB，非主键索引在叶子节点存储的是主键的值，然后用主键到主键索引中获取数据。
+  
+  
 
-#### 2.创建索引的原则
+#### 3.2创建索引的原则
 
 - 最左前缀匹配原则
 - 为经常需要排序（索引已经排序），分组，查询以及联合查询（加快表的连接速度）的列做索引
@@ -626,11 +658,11 @@ explain语句显示的字段: id, select_type, table, type, possible_keys, keys,
 >
 >   https://www.cxyxiaowu.com/3726.html
 
------------------
 
-### 事务
 
-#### 1.四大特性
+### 4.事务
+
+#### 4.1四大特性
 
 ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isolation），持久性（Durability）
 
@@ -639,13 +671,17 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 - 隔离性：并发访问数据库时，一个用户的事务不被其他事务所干扰，各并发事务之间数据库是独立的；
 - 持久性： 一个事务被提交之后。它对数据库中数据的改变是持久的，即使数据库发生故障也不应该对其有任何影响。
 
-#### 2.并发事务带来的问题
+
+
+#### 4.2并发事务带来的问题
 
 - 脏读：一个事务读取了另一个事务尚未提交的数据；
 - 幻读：A事务的执行期间，事务B对事务A访问过的表中**插入或删除**了某一行，导致事务A第二次访问该表时读到了新插入的行，或者少了一行；
 - 不可重复读：A事务的执行期间，事务B对事务A访问过的表中**修改**了某一行，导致事务A第二次访问同一行时读到的数据不一样；
 
-#### 3.数据库隔离级别
+
+
+#### 4.3数据库隔离级别
 
 - 读未提交
 
@@ -675,11 +711,11 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 >
 > https://blog.csdn.net/qq_44836294/article/details/108059551?utm_medium=distribute.pc_relevant.none-task-blog-searchFromBaidu-1.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-searchFromBaidu-1.control
 
------------------------------
 
-### 锁
 
-#### 1.按读写划分
+### 5.锁
+
+#### 5.1按读写划分
 
 - 排它锁（写锁）：事务对数据添加排它锁后，其它事务不能对该数据添加读锁或写锁
 - 共享锁（读锁）：事务对数据添加共享锁后，其它事务只能对该数据添加读锁而不能添加写锁
@@ -688,7 +724,7 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 >
 > 避免读到写操作的中间状态。
 
-#### 2.按粒度划分
+#### 5.2按粒度划分
 
 - 表锁：开销小，加锁快，不会出现死锁，并发度最低
 - 行锁：开销大，加锁慢，会出现死锁，并发度最高
@@ -698,7 +734,7 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 >
 > 如果要锁多条记录，对每条记录依次加锁开销比直接锁整张表更大。即使只锁一行还是要先找到对应的那一行，所以说行锁开销大、加锁慢。
 
-#### 3.行锁分类
+#### 5.3行锁分类
 
 - 间隙锁
 
@@ -710,15 +746,15 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 
   例如select * from table where id > 1 and id < 7；会锁住id = 1, 3, 6a和(1, 3), (3, 6)以及(6, 10)
 
-------
-
-### 主从复制
 
 
+### 6.主从复制
 
-----------
 
-### SQL语句的执行过程
+
+
+
+### 7.SQL语句的执行过程
 
 1. 连接器，负责与客户端通信
 2. 查询缓存，检查之前是否执行过该语句，缓存里有无结果
@@ -726,9 +762,9 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 4. 优化器，决定执行顺序，索引如何选择等
 5. 执行器
 
-------
 
-### drop, truncate, delete区别
+
+### 8.drop, truncate, delete区别
 
 - drop是直接删除表
 - truncate是删除表中所有数据，且无法恢复
