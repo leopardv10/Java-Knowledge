@@ -1629,26 +1629,51 @@ public class UserDaoProxy implements IUserDao{
 
 #### 3.cglib动态代理
 
------
+
 
 ## Chapter 8 消息队列
 
+---
 
-
-### 消息队列的作用
+### 1.消息队列的作用
 
 - 异步：提升系统吞吐量（单位时间内处理请求的数量）。
 - 解耦：下游模块出问题不影响上游模块使用。
 - 削峰：将系统的超量请求暂存其中，以便系统后期可以慢慢进行处理，避免了请求的丢失或系统被压垮。
 
----
 
-### RocketMQ组成部分
 
+### 2.RocketMQ基本概念
+
+- Topic：主题，一类消息的集合，每条消息只能属于一个主题。
+
+- Tag：用来进一步区分某个topic下的消息，消息从生产者发出即会带上tag属性。
+
+  > 使用举例：没有直接关联的消息，如淘宝交易消息，京东物流消息使用不同的Topic进行区分；而同样是天猫交易消息，电器类订单、女装类订单、化妆品类订单的消息可以用Tag进行区分。
+
+![mq中Topic和Tag的关系](https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/3652190061/p69112.png)
+
+- Queue: 存储消息的物理实体，一个topic可以包括多个queue
 - NameServer：
 - Producer：
 - Consumer：
 - Broker：
+- Producer Group:
+- Consumer Group:
+
+
+
+### 3.消费模式：
+
+- 集群消费
+- 广播消费
+
+
+
+### 4.如何解决消息重复消费的问题
+
+- 原因：正常情况下在consumer真正消费完消息后应该发送ack，通知broker该消息已正常消费，从queue中剔除
+  当ack因为网络原因无法发送到broker，broker会认为词条消息没有被消费，此后会开启消息重投机制把消息再次投递到consumer。
 
 ----
 
