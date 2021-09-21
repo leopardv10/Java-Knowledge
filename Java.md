@@ -1645,6 +1645,14 @@ public class UserDaoProxy implements IUserDao{
 - Producer：
 - Consumer：
 - Broker：
+- Message Queue：消息存储的物理单位
+
+
+
+### 3.RocketMQ消费模式
+
+- 集群消费：消息只需要被处理一次。
+- 广播消费：每条消息需要被集群下的每个消费者处理。
 
 ----
 
