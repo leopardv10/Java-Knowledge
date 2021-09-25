@@ -1651,8 +1651,29 @@ public class UserDaoProxy implements IUserDao{
 
 ### 3.RocketMQ消费模式
 
-- 集群消费：消息只需要被处理一次。
+- 集群消费：1.消息只需要被处理一次。
+
+  ​				  2.多个group同时消费一个topic，每个group都会有一个consumer消费到数据。
+
 - 广播消费：每条消息需要被集群下的每个消费者处理。
+
+
+
+### 4.如何解决消息重复消费？
+
+原因：正常情况下consumer消费完消息后会发送ack通知broker消息已正常消费，并从queue中移除。但当ack因为网络问题没有到达broker，broker就会认为该消息没有被消费，会开启重投机制把消息再次投到consumer。
+
+解决方案：
+
+- 数据库表：处理消息时，使用消息主键在表中带有约束的字段insert。
+- map：单机可以使用map记录已经消费的消息。
+- redis：redis分布式锁。
+
+
+
+### 5.RocketMQ如何保证顺序消费？
+
+
 
 ----
 
@@ -1668,9 +1689,13 @@ https://blog.csdn.net/l975764577/article/details/39399077
 
 - 二叉树查找复杂度
 
-  最好：$O(\log n)$；最坏：$O(n)$
+  最好：相当于二分查找，$O(\log n)$；
+  
+  最坏：$O(n)$
 
+#### 2.二分法
 
+$O(\log n)$
 
 -----
 
