@@ -2,11 +2,9 @@
 
 ---
 
-
-
 ### Java基础
 
---------
+
 
 #### 1.构造器是否能被重写
 
@@ -56,12 +54,7 @@ object默认的equals方法调用的是==，即比较的是对象地址，所以
 ![img](https://pic3.zhimg.com/80/v2-f36f366c07a6188ea3fdefc794ba021a_1440w.jpg)
 
 Java内存模型规定了所有的变量都存储在主内存中，每条线程还有自己的工作内存，线程的工作内存中保存了该线程中用到的变量的主内存副本拷贝，线程对变量的所有操作都必须在工作内存中进行，然后再刷新到主存。不同的线程之间也无法直接访问对方工作内存中的变量，线程间变量的传递均需要自己的工作内存和主存之间进行数据同步进行。
-
 而JMM就作用于工作内存和主存之间数据同步过程。他规定了如何做数据同步以及什么时候做数据同步。
-
-> 为什么局部变量不会出现线程安全问题？
->
-> 因为局部变量都存放在线程各自的工作内存里，是线程私有的，只有全局变量被线程共享。
 
 
 
@@ -69,7 +62,7 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
 - public所有其它类都能访问；
 - protected只能在自己所在的包中被访问，或者其它包中的子类访问；
-- private只能在当前类中访问（子类无法继承private方法）；
+- private只能在当前类中访问；
 
 
 
@@ -89,11 +82,11 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
   - 不受检查异常：RuntimeException，包括NullPointException，IndexOutOfBoundException等。
 - Error：程序无法处理的错误，无法用catch捕获。
 
-
+---
 
 ### 集合
 
------------
+
 
 #### 1.要求线程安全时用什么List
 
@@ -105,21 +98,17 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
 #### 2.ConcurrentHashMap如何实现线程安全
 
-1. JDK1.7：segment分段锁（可重入锁，实现了ReentrantLock），每个segment包含一个HashEntry数组，每个HashEntry是一个链表因此在ConcurrentHashMap查询一个元素的过程需要进行两次Hash操作，如下所示：
-   - 第一次Hash定位到Segment
-   - 第二次Hash定位到元素所在的链表的头部
+- JDK1.7：segment分段锁（可重入锁，实现了ReentrantLock），每个segment包含一个HashEntry数组，每个HashEntry是一个链表因此在ConcurrentHashMap查询一个元素的过程需要进行两次Hash操作，如下所示：
+  - 第一次Hash定位到Segment
+  - 第二次Hash定位到元素所在的链表的头部
 
 <img src="https://segmentfault.com/img/remote/1460000024432654" alt="img" style="zoom:80%;" />
 
-2. JDK1.8：采用CAS机制和synchronized关键字
-   - CAS：put数据时首先计算出对应位置，如果当前这个位置的Node为null，则通过CAS方式的方法写入。所谓的CAS，即即compareAndSwap，执行CAS操作的时候，将内存位置的值与预期原值比较，如果相匹配，那么处理器会自动将该位置值更新为新值，否则，处理器不做任何操作。
-   - synchronized：当头结点不为null时，则使用该头结点加锁，这样就能多线程去put hashCode相同的时候不会出现数据丢失的问题。
-
->为什么头节点不为空时用synchronized而不是cas？
->
->假设该位置有一条长度为3的链表4->5->6，线程A插入数据后原本预期链表长度变为4。如果采用cas机制，当线程A插入数据时，可能有线程B删除了链表的最后一个数字6，然后线程C将链表第二个数字5改成了6，这时线程A还是可以插入数据，但插入后的链表长度依旧是3和原本预期的4不一致。
-
-
+- JDK1.8：采用CAS机制和synchronized关键字
+  - CAS：put数据时首先计算出对应位置，如果当前这个位置的Node为null，则通过CAS方式的方法写入。所谓的CAS，即即compareAndSwap，执行CAS操作的时候，将内存位置的值与预期原值比较，如果相匹配，那么处理器会自动将该位置值更新为新值，否则，处理器不做任何操作。
+  - synchronized：当头结点不为null时，则使用该头结点加锁，这样就能多线程去put hashCode相同的时候不会出现数据丢失的问题。
+  
+  
 
 #### 3.ArrayList扩容
 
@@ -146,13 +135,13 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
   一句话，HashMap的长度为2的幂次方的原因是为了减少Hash碰撞，尽量使Hash算法的结果均匀分布。任何一个2的倍数n，n - 1的二进制每一位都是1，这样按位与运算的结果就完全取决于hashcode
 
-
+-------
 
 ### 多线程
 
------
 
-#### 1.并发编程三要素（三要素的意义？）
+
+#### 1.并发编程三要素
 
 - 原子性：一个或多个操作要么全部执行成功要么全部执行失败。
 - 有序性：程序执行的顺序按代码先后顺序执行（可能有指令重排序）。
@@ -160,7 +149,7 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
 
 
-#### 2. 线程池参数（调用线程是什么？）
+#### 2. 线程池参数
 
 - corePoolSize：线程池保留的最小线程数，若线程池中的线程数 < corePoolSize，则在执行时execute()时创建
 
@@ -174,7 +163,7 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
   - ArrayBlockingQueue：有界队列
   - LinkedBlockingQueue：无界队列
-  - SynchronousQueue：不存储元素，一个put操作必须等待take操作，否则不能添加（保证来一个任务，有闲线程就用空闲线程来执行，否则创建新的线程执行）
+  - SynchronousQueue：不存储元素，一个put操作必须等待take操作，否则不能添加
   - PriorityBlockingQueue：优先级队列，可设置任务优先级
 
 - handler：拒绝策略，有四种取值
@@ -198,10 +187,9 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
 
 
-#### 4.volatile&ThreadLocal关键字
+#### 4.volatile关键字
 
-1. volatile: 可以保证变量的可见性，以及防止指令重排序；
-2. ThreadLocal: 使线程拥有自己的局部变量；
+可以保证变量的可见性，以及防止指令重排序；
 
 
 
@@ -252,7 +240,9 @@ https://segmentfault.com/a/1190000022904663
 
 
 
-#### 9.synchronized原理（待完善）
+#### 9.synchronized
+
+原理：
 
 - synchronized同步语句块使⽤的是 monitorenter 和 monitorexit 指令，其中 monitorenter指令指向同步代码块的开始位置，monitorexit 指令则指明同步代码块的结束位置。当执行monitorenter时线程会试图获取monitor（monitor对象存在于每个Java对象的对象头中）。当计数器为零时就可成功获取，然后计数器+1。执行monitorexist指令时，锁计数器-1，当计数器为0时表示锁被释放。如果获取锁失败线程就会阻塞。
 - synchronized修饰同步方法时是通过ACC_SYNCHRONIZED标识来指明该方法是一个同步方法。
@@ -293,7 +283,7 @@ https://segmentfault.com/a/1190000022904663
 
   corePoolSize为1；maximumPoolSize为1；keepAliveTime为0L；unit为TimeUnit.MILLISECONDS；workQueue为LinkedBlockingQueue；适用于一个任务一个任务执行的场景。
 
-- newScheduledThreadPool
+- NewScheduledThreadPool
 
   corePoolSize为传递来的参数，maximumPoolSize为Integer.MAX_VALUE；keepAliveTime为0；unit为：TimeUnit.NANOSECONDS；workQueue为：new DelayedWorkQueue() 一个按超时时间升序排序的队列；适合周期性任务。
 
@@ -337,13 +327,6 @@ https://zhuanlan.zhihu.com/p/52845869
   - Reentrantlock
   - synchronized
 
-
-
-#### 16. 并发和并行区别
-
-- 并发:一个处理器同时处理多个任务。
-- 并行:多个处理器或者是多核的处理器同时处理多个不同的任务。
-
 --------------
 
 ### JVM
@@ -372,11 +355,7 @@ https://zhuanlan.zhihu.com/p/52845869
 
 - 引用计数：给对象中添加一个计数器，每当被引用时计数器+1，引用失效计数器-1，当计数器为0时该对象即不能再被使用。
 
-  
-  
   > 哪些对象可作为GC Roots：
-  >
-  > 
   >
   > 栈和方法区里引用到的对象
 
@@ -413,13 +392,9 @@ https://zhuanlan.zhihu.com/p/52845869
 
 #### 5.类加载过程
 
-1. 定义：举个通俗点的例子来说，JVM在执行某段代码时，遇到了class A， 然而此时内存中并没有class A的相关信息，于是JVM就会到相应的class文件中去寻找class A的类信息，并加载进内存中，这就是我们所说的类加载过程。
+> 定义：举个通俗点的例子来说，JVM在执行某段代码时，遇到了class A， 然而此时内存中并没有class A的相关信息，于是JVM就会到相应的class文件中去寻找class A的类信息，并加载进内存中，这就是我们所说的类加载过程。
 
-   编译即把Java文件编译成字节码文件（.class文件），运行则是把编译生成的.class文件交给JVM运行。而类加载指的是JVM把.class文件中类信息加载进内存并解析生成对应的class对象的过程。
-
-   
-
-2. 步骤
+编译即把Java文件编译成字节码文件（.class文件），运行则是把编译生成的.class文件交给JVM运行。而类加载指的是JVM把.class文件中类信息加载进内存并解析生成对应的class对象的过程。
 
 - 加载：把.class文件通过类加载器加载到内存中
 
@@ -452,7 +427,7 @@ https://zhuanlan.zhihu.com/p/52845869
 
 - System.gc()方法的调用：调用System.gc()方法会建议JVM进行Full GC，但注意这只是建议，JVM执行不执行是另外一回事儿，不过在大多数情况下会增加Full GC的次数，导致系统性能下降，一般建议不要手动进行此方法的调用，可以通过-XX:+ DisableExplicitGC来禁止RMI调用System.gc。
 - 老年代空间不足
-- Metaspace区（存放类的元数据）内存不足
+- Metaspace区内存不足
 
 
 
@@ -462,13 +437,13 @@ JDK1.8默认使用**Parallel Scanvage** + **Parallel Old**
 
 <img src="https://img-blog.csdnimg.cn/20200304160245276.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMzY2MjI5,size_16,color_FFFFFF,t_70" alt="img" style="zoom:80%;" />
 
-1. 新生代垃圾收集器：
+新生代垃圾收集器：
 
 - Serial: 单线程垃圾回收, 复制算法
 - ParNew: 多线程垃圾回收，复制算法
 - Parallel Scanvenge: 关注吞吐量，用户代码运行时间和cpu运行总时间比值
 
-2. 老年代垃圾收集器：
+老年代垃圾收集器：
 
 - Serial Old:  标记整理
 
@@ -480,15 +455,7 @@ JDK1.8默认使用**Parallel Scanvage** + **Parallel Old**
 
 - ![image-20210715234252055](C:\Users\leopa\AppData\Roaming\Typora\typora-user-images\image-20210715234252055.png)
 
-  > CMS的缺点：
-  >
-  > 
-  >
-  > 1. 对CPU资源敏感
-  > 2. 无法处理浮动垃圾
-  > 3. 使用标记清除有空间碎片
-
-3. G1收集器：
+G1收集器：
 
 
 
@@ -529,7 +496,7 @@ void method(){
 
 
 
-#### 10.Java对象创建过程（待完善）
+#### 10.Java对象创建过程
 
 ![image-20210715221914725](C:\Users\leopa\AppData\Roaming\Typora\typora-user-images\image-20210715221914725.png)
 
@@ -541,25 +508,23 @@ void method(){
 
 
 
-#### 11.堆内存的划分
-
-
-
---------
-
-
-
 ## *Chapter 2 MySQL*
 
-
+---------
 
 ### 1. MyISAM和InnoDB区别
 
 - MyISAM只支持表锁，InnoDB支持行锁和表锁；
+
 - InnoDB支持事务；
+
 - InnoDB支持外键；
+
+  （表A的字段是表B的主键，那么该字段就是表A的外键）
+
 - InnoDB支持MVCC；
-- InnoDB是聚簇索引，MyISAM是非聚簇索引；
+
+- InnoDB的主键是聚簇索引，MyISAM是非聚簇索引；
 
 
 
@@ -1274,23 +1239,23 @@ socket本质上就是对 TCP/IP 的运用进行了一层封装，然后应用程
   - 信号驱动IO：在信号驱动IO模型中，当用户线程发起一个IO请求操作，会给对应的socket注册一个信号函数，然后用户线程会继续执行，当内核数据就绪时会发送一个信号给用户线程，用户线程接收到信号之后，便在信号函数中调用IO读写操作来进行实际的IO请求操作。
 - 异步IO：用户进程进行aio_read系统调用之后，就可以去处理其他的逻辑了，无论内核数据是否准备好，都会直接返回给用户进程，不会对进程造成阻塞。等到数据准备好了，内核直接复制数据到进程空间，然后从**内核向进程发送通知**，此时数据已经在用户空间了,可以对数据进行处理了。
 
+--------
+
 
 
 ## Chapter 5 框架
 
---------
+
 
 ### Spring
 
-
-
 #### 1.IOC
 
-1. 概念
+> 概念
 
-   Class A要调用Class B，常规做法要在A中new出B对象，但通过IOC将创建B对象的过程交给了**IOC容器**，然后直接注入A中**（依赖注入/控制反转）**，而不需要在Class A中进行。
+Class A要调用Class B，常规做法要在A中new出B对象，但通过IOC将创建B对象的过程交给了**IOC容器**，然后直接注入A中**（依赖注入/控制反转）**，而不需要在Class A中进行。
 
-2. 优点
+> 优点
 
 - 依赖注入：将**被调用类**作为参数传入**调用类**，实现了上层类对下层类的控制。
 
@@ -1298,93 +1263,43 @@ socket本质上就是对 TCP/IP 的运用进行了一层封装，然后应用程
 
 - IOC容器：假设B中调用了C，C中调用了D，如果没有IOC容器，我们需要先new D然后将D传入C再将C传入B，再将B传入A，这样需要写大量new。有了IOC容器这一过程直接交给IOC容器而不用自己手写。
 
-3. 底层实现
+> 底层实现
 
-   反射，工厂模式
+反射，工厂模式
 
 ------------------------------
 
 #### 2.AOP
 
-1. 概念
+> 概念
 
-   运行时动态地将代码切入到类的指定方法，指定位置上的编程思想。
+运行时动态地将代码切入到类的指定方法，指定位置上的编程思想。
 
-2. 优点
+> 优点
 
-   增强原有方法，减少重复代码。
+增强原有方法，减少重复代码。
 
-3. 底层实现
+> 底层实现
 
-   JDK动态代理（接口），CGLIB动态代理（继承）
+JDK动态代理（接口），CGLIB动态代理（继承）
 
 --------------------------------------
 
 #### 3.Spring事务
 
-
-
-##### 3.1 Spring事务实现
-
 spring 中的事务实现从原理上说比较简单，通过 AOP在方法执行前后增加数据库事务的操作。
 
 1. 在方法开始时判断是否开启新事务，需要开启事务则设置事务手动提交 set autocommit=0;
+
 2. 在方法执行完成后手动提交事务 commit;
+
 3. 在方法抛出指定异常后调用 rollback 回滚事务;
 
-
-
-##### 3.2 Transactional注解的使用
+> 使用
 
 直接在类或方法上添加@Transactional标签。
 
 rollbackfor参数：默认只有RunTimeException时才会回滚，设置为rollbackFor=Exception.class则可以在非运行时异常也能回滚。
-
-
-
-##### 3.3 事务的传播机制（待完善）
-
-- 传播机制生效条件：
-
-  因为 spring 是使用 aop 来代理事务控制 ，是针对于接口或类的，所以在同一个类中两个方法的调用，传播机制是不生效的。
-
-- 传播机制类型：
-
-  1. ### PROPAGATION_REQUIRED (默认)
-
-     - 支持当前事务，如果当前没有事务，则新建事务
-     - 如果当前存在事务，则加入当前事务，合并成一个事务
-
-  2. ### REQUIRES_NEW
-
-     - 新建事务，如果当前存在事务，则把当前事务挂起
-     - 这个方法会独立提交事务，不受调用者的事务影响，父级异常，它也是正常提交
-
-  3. ### NESTED
-
-     - 如果当前存在事务，它将会成为父级事务的一个子事务，方法结束后并没有提交，只有等父事务结束才提交
-     - 如果当前没有事务，则新建事务
-     - 如果它异常，父级可以捕获它的异常而不进行回滚，正常提交
-     - 但如果父级异常，它必然回滚，这就是和 `REQUIRES_NEW` 的区别
-
-  4. ### SUPPORTS
-
-     - 如果当前存在事务，则加入事务
-     - 如果当前不存在事务，则以非事务方式运行，这个和不写没区别
-
-  5. ### NOT_SUPPORTED
-
-     - 以非事务方式运行
-     - 如果当前存在事务，则把当前事务挂起
-
-  6. ### MANDATORY
-
-     - 如果当前存在事务，则运行在当前事务中
-     - 如果当前无事务，则抛出异常，也即父级方法必须有事务
-
-  7. ### NEVER
-
-     - 以非事务方式运行，如果当前存在事务，则抛出异常，即父级方法必须无事务
 
 > Q1:A方法未添加事务，B方法添加了事务，A调用B事务会生效吗？
 
@@ -1397,79 +1312,26 @@ rollbackfor参数：默认只有RunTimeException时才会回滚，设置为rollb
 
 > Q2:final, private, static方法添加事务标签不生效。
 
+-----
 
-
-##### 3.3 Spring事务隔离级别
-
-1. DEFAULT，这是一个PlatfromTransactionManager默认的隔离级别，使用数据库默认的事务隔离级别.
-2. 读未提交，（read uncommited） ：脏读，不可重复读，幻读都有可能发生
-3. 读已提交，（read commited）：避免脏读。但是不可重复读和幻读有可能发生
-4. 可重复读，（repeatable read） ：避免脏读和不可重复读.但是幻读有可能发生
-5. 可串行化，（serializable） ：避免以上所有读问题
-
----
-
-#### 4. RestController和Controller
+#### 4.RestController和Controller
 
 单独使用@Controller注解而不加@ResponseBody返回是一个视图，@RestController返回json或xml数据
 
----
+----------
 
-#### 5. Spring bean的作用域
+#### 5.Spring bean的作用域
 
 - singleton：Spring中的bean默认都是单例的
 - prototype：每次请求创建一个新的实例
 - request：每次HTTP请求创建一个实例，该实例仅在当前HTTP request有效
 - session：每次HTTP请求创建一个实例，该实例仅在当前session有效
 
-----
-
-#### 6. Spring注入bean的方式
-
-1. xml注入
-   - set方法注入
-   - 构造函数注入
-   - 工厂方法注入
-2. 注解注入
-   - @Autowired
-   - @Resource
-   - @Required
-
----
-
-#### 7. Spring Bean的线程安全问题
-
-Spring的Bean默认是单例模式，因此当存在全局变量时是存在线程安全问题的。
-
-解决方法：
-
-1. 使用prototype作用域。
-2. 使用TreadLocal来定义成员变量
-
----
-
-#### 8. Spring如何解决循环依赖？
-
-
-
-----
-
-#### 9. Spring Bean的生命周期（待完善）
-
-大致过程：
-
-1. 实例化：创建实例对象，分配内存空间
-2. 属性赋值：如通过@Value注解为属性赋值
-3. 初始化：注入依赖
-4. 销毁
-
-----------------------
+-----
 
 ### MyBatis
 
-
-
-#### 1. MyBatis如何防止sql注入？
+#### 1.MyBatis如何防止sql注入？
 
 - MyBatis启动了sql预编译功能，在sql执行前会先将sql语句发送给数据库进行编译；执行时直接用入参替换掉预编译好的“？”占位符即可，这样即使入参是敏感字段，如“or '1' == '1' ”也只是作为一个参数传入。sql注入只对编译过程起作用。
 
@@ -1793,43 +1655,8 @@ public class UserDaoProxy implements IUserDao{
 
 ### 3.RocketMQ消费模式
 
-- 集群消费：1.消息只需要被处理一次。
-
-  ​				  2.多个group同时消费一个topic，每个group都会有一个consumer消费到数据。
-
+- 集群消费：消息只需要被处理一次。
 - 广播消费：每条消息需要被集群下的每个消费者处理。
-
-
-
-### 4.如何解决消息重复消费？
-
-原因：正常情况下consumer消费完消息后会发送ack通知broker消息已正常消费，并从queue中移除。但当ack因为网络问题没有到达broker，broker就会认为该消息没有被消费，会开启重投机制把消息再次投到consumer。
-
-解决方案：
-
-- 数据库表：每条消息都有自己的id，处理完消息后将其插入数据库，每次消费前去查表是否已经消费过该条数据。
-- map：单机可以使用map记录已经消费的消息。
-- redis：redis分布式锁。
-
-
-
-### 5.RocketMQ如何保证顺序消费？（待完善）
-
-RocketMQ采用了局部顺序一致性的机制，实现了单个队列中的消息严格有序。也就是说，如果想要保证顺序消费，必须将一组消息发送到同一个队列中，然后再由消费者进行注意消费。
-
-
-
-### 6. 为什么RocketMQ采用pull消息的方式而不是push
-
-如果broker主动推送消息的话有可能push速度快，消费速度慢的情况，那么就会造成消息在 Consumer 端堆积过多，同时又不能被其他 Consumer 消费的情况。而 pull 的方式可以根据当前自身情况来 pull，不会造成过多的压力而造成瓶颈。所以采取了 pull 的方式。
-
-
-
-### 7. RocketMQ如何保证消息不丢失
-
-1. producer：默认同步发送，发送完后等待broker响应，若超时未收到响应会重发。
-2. broker：开启同步刷盘模式会等消息刷盘后再返回producer成功，同时开启主从复制，等slave也将消息刷盘后broker才会返回producer成功。
-3. consumer：消费成功后才返回给broker ack，若消息消费失败会重试。
 
 ----
 
@@ -1845,13 +1672,9 @@ https://blog.csdn.net/l975764577/article/details/39399077
 
 - 二叉树查找复杂度
 
-  最好：相当于二分查找，$O(\log n)$；
-  
-  最坏：$O(n)$
+  最好：$O(\log n)$；最坏：$O(n)$
 
-#### 2.二分法
 
-$O(\log n)$
 
 -----
 
