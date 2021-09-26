@@ -532,6 +532,8 @@ void method(){
 
 explain语句显示的字段: id, select_type, table, type, possible_keys, keys, key_len, ref, rows, extra 
 
+![image-20210926110030390](C:\Users\liwei5\AppData\Roaming\Typora\typora-user-images\image-20210926110030390.png)
+
 - id
   - id相同，执行顺序从上到下。
   - id不同，id越大优先级越高，优先执行。
@@ -595,7 +597,7 @@ explain语句显示的字段: id, select_type, table, type, possible_keys, keys,
     SELECT * FROM tbl_name WHERE key_column BETWEEN 10 and 20;
     ```
 
-  - index：索引全表扫描，把整个索引树全部查一遍
+  - index：把整个索引树全部查一遍
 
   - possible_keys, keys
 
@@ -617,8 +619,6 @@ explain语句显示的字段: id, select_type, table, type, possible_keys, keys,
 
 ### 3.索引
 
-
-
 #### 3.1索引分类
 
 - 普通索引：无任何限制
@@ -635,7 +635,7 @@ explain语句显示的字段: id, select_type, table, type, possible_keys, keys,
 
   MyISAM使用非聚簇索引，叶子结点存放数据记录的地址。
 
-  InnoDB使用聚簇索引，叶子结点包含了完整的数据记录。
+  InnoDB主键使用聚簇索引，叶子结点包含了完整的数据记录。
 
   对于InnoDB，非主键索引在叶子节点存储的是主键的值，然后用主键到主键索引中获取数据。
   
@@ -644,7 +644,7 @@ explain语句显示的字段: id, select_type, table, type, possible_keys, keys,
 #### 3.2创建索引的原则
 
 - 最左前缀匹配原则
-- 为经常需要排序（索引已经排序），分组，查询以及联合查询（加快表的连接速度）的列做索引
+- 为经常需要排序（B+树叶子节点有序），分组，查询以及联合查询（加快表的连接速度）的列做索引
 - 选择唯一索引，唯一索引的值是唯一的，可以更快地确定某条记录
 - 不要让索引列参与计算，否则索引会失效
 - 限制索引的数量，因为更新表时也要更新索引
@@ -692,7 +692,7 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
   - 一个事务还没提交，它所做的修改就能被别的事务看到
 
   - 会出现脏读、幻读、不可重复读
-  - 只在写数据时加行级共享锁
+  - 只在写数据时加行级共享锁（其它事务可读但不可写）
 
 - 读已提交
 
@@ -778,17 +778,11 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 - truncate是删除表中所有数据，且无法恢复
 - delete可以加where语句
 
----------
 
----
 
 ## *Chapter 3 Redis*
 
------
-
 ---
-
-
 
 ### 1.Redis 为什么快
 
@@ -916,7 +910,7 @@ Redis集群有16384个哈希槽，每个 key 通过 CRC16 校验后对 16384 取
 
 -------------------------------------
 
-### Redis分布式锁
+### 9. Redis分布式锁
 
 Redis为单进程单线程模式，采用队列模式将并发访问变成串行访问，且多客户端对Redis的连接并不存在竞争关系Redis中可以使用SETNX（set if not exists）命令实现分布式锁。
 
@@ -932,13 +926,13 @@ eg: setnx key value
 
 --------
 
-### 并发竞争key
+### 10. 并发竞争key
 
 分布式锁，zookeeper和redis都可以实现。
 
 ------------------------------------
 
-### 缓存雪崩、穿透与击穿
+### 11. 缓存雪崩、穿透与击穿
 
 #### 1.缓存雪崩
 
@@ -978,13 +972,13 @@ eg: setnx key value
 
 -----------------------------------
 
-### 缓存与数据库的双写一致性
+### 12. 缓存与数据库的双写一致性
 
-先更新数据库，再写缓存。若先更新缓存，再更新数据库可能会出现脏读。
+先更新数据库，再删缓存。若先更新缓存，再更新数据库可能会出现脏读。
 
 ----------------------------------------
 
-### Redis五大数据结构的底层实现
+### 13. Redis五大数据结构的底层实现
 
 
 
@@ -1058,21 +1052,19 @@ http://redisbook.com/preview/object/hash.html
 
 -------
 
-### Redis的IO多路复用
+### 14. Redis的IO多路复用
+
+IO：数据的读写操作，分为内存IO，磁盘IO以及网络IO。
 
 - ##### 网络模块通过单个线程监控多个网络请求状态，直到有数据可读可写时，才去通知操作模块的线程去处理数据。
 
 https://zhuanlan.zhihu.com/p/115912936
 
-------------------------------------
 
-----
 
 ## Chapter 4 计算机网络
 
-----
-
-----
+---
 
 ### 1.TCP协议
 
