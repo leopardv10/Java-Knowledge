@@ -54,7 +54,12 @@ object默认的equals方法调用的是==，即比较的是对象地址，所以
 ![img](https://pic3.zhimg.com/80/v2-f36f366c07a6188ea3fdefc794ba021a_1440w.jpg)
 
 Java内存模型规定了所有的变量都存储在主内存中，每条线程还有自己的工作内存，线程的工作内存中保存了该线程中用到的变量的主内存副本拷贝，线程对变量的所有操作都必须在工作内存中进行，然后再刷新到主存。不同的线程之间也无法直接访问对方工作内存中的变量，线程间变量的传递均需要自己的工作内存和主存之间进行数据同步进行。
+
 而JMM就作用于工作内存和主存之间数据同步过程。他规定了如何做数据同步以及什么时候做数据同步。
+
+> 为什么局部变量不会出现线程安全问题？
+>
+> 因为局部变量都存放在线程各自的工作内存里，是线程私有的，只有全局变量被线程共享。
 
 
 
@@ -62,7 +67,7 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
 - public所有其它类都能访问；
 - protected只能在自己所在的包中被访问，或者其它包中的子类访问；
-- private只能在当前类中访问；
+- private只能在当前类中访问（子类无法继承private方法）；
 
 
 
@@ -98,17 +103,21 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
 #### 2.ConcurrentHashMap如何实现线程安全
 
-- JDK1.7：segment分段锁（可重入锁，实现了ReentrantLock），每个segment包含一个HashEntry数组，每个HashEntry是一个链表因此在ConcurrentHashMap查询一个元素的过程需要进行两次Hash操作，如下所示：
-  - 第一次Hash定位到Segment
-  - 第二次Hash定位到元素所在的链表的头部
+1. JDK1.7：segment分段锁（可重入锁，实现了ReentrantLock），每个segment包含一个HashEntry数组，每个HashEntry是一个链表因此在ConcurrentHashMap查询一个元素的过程需要进行两次Hash操作，如下所示：
+   - 第一次Hash定位到Segment
+   - 第二次Hash定位到元素所在的链表的头部
 
 <img src="https://segmentfault.com/img/remote/1460000024432654" alt="img" style="zoom:80%;" />
 
-- JDK1.8：采用CAS机制和synchronized关键字
-  - CAS：put数据时首先计算出对应位置，如果当前这个位置的Node为null，则通过CAS方式的方法写入。所谓的CAS，即即compareAndSwap，执行CAS操作的时候，将内存位置的值与预期原值比较，如果相匹配，那么处理器会自动将该位置值更新为新值，否则，处理器不做任何操作。
-  - synchronized：当头结点不为null时，则使用该头结点加锁，这样就能多线程去put hashCode相同的时候不会出现数据丢失的问题。
-  
-  
+2. JDK1.8：采用CAS机制和synchronized关键字
+   - CAS：put数据时首先计算出对应位置，如果当前这个位置的Node为null，则通过CAS方式的方法写入。所谓的CAS，即即compareAndSwap，执行CAS操作的时候，将内存位置的值与预期原值比较，如果相匹配，那么处理器会自动将该位置值更新为新值，否则，处理器不做任何操作。
+   - synchronized：当头结点不为null时，则使用该头结点加锁，这样就能多线程去put hashCode相同的时候不会出现数据丢失的问题。
+
+>为什么头节点不为空时用synchronized而不是cas？
+>
+>假设该位置有一条长度为3的链表4->5->6，线程A插入数据后原本预期链表长度变为4。如果采用cas机制，当线程A插入数据时，可能有线程B删除了链表的最后一个数字6，然后线程C将链表第二个数字5改成了6，这时线程A还是可以插入数据，但插入后的链表长度依旧是3和原本预期的4不一致。
+
+
 
 #### 3.ArrayList扩容
 
