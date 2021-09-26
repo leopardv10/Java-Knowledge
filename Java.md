@@ -2,9 +2,11 @@
 
 ---
 
+
+
 ### Java基础
 
-
+--------
 
 #### 1.构造器是否能被重写
 
@@ -87,11 +89,11 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
   - 不受检查异常：RuntimeException，包括NullPointException，IndexOutOfBoundException等。
 - Error：程序无法处理的错误，无法用catch捕获。
 
----
+
 
 ### 集合
 
-
+-----------
 
 #### 1.要求线程安全时用什么List
 
@@ -144,13 +146,13 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
   一句话，HashMap的长度为2的幂次方的原因是为了减少Hash碰撞，尽量使Hash算法的结果均匀分布。任何一个2的倍数n，n - 1的二进制每一位都是1，这样按位与运算的结果就完全取决于hashcode
 
--------
+
 
 ### 多线程
 
+-----
 
-
-#### 1.并发编程三要素
+#### 1.并发编程三要素（三要素的意义？）
 
 - 原子性：一个或多个操作要么全部执行成功要么全部执行失败。
 - 有序性：程序执行的顺序按代码先后顺序执行（可能有指令重排序）。
@@ -158,7 +160,7 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
 
 
-#### 2. 线程池参数
+#### 2. 线程池参数（调用线程是什么？）
 
 - corePoolSize：线程池保留的最小线程数，若线程池中的线程数 < corePoolSize，则在执行时execute()时创建
 
@@ -172,7 +174,7 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
   - ArrayBlockingQueue：有界队列
   - LinkedBlockingQueue：无界队列
-  - SynchronousQueue：不存储元素，一个put操作必须等待take操作，否则不能添加
+  - SynchronousQueue：不存储元素，一个put操作必须等待take操作，否则不能添加（保证来一个任务，有闲线程就用空闲线程来执行，否则创建新的线程执行）
   - PriorityBlockingQueue：优先级队列，可设置任务优先级
 
 - handler：拒绝策略，有四种取值
@@ -196,9 +198,10 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
 
 
-#### 4.volatile关键字
+#### 4.volatile&ThreadLocal关键字
 
-可以保证变量的可见性，以及防止指令重排序；
+1. volatile: 可以保证变量的可见性，以及防止指令重排序；
+2. ThreadLocal: 使线程拥有自己的局部变量；
 
 
 
@@ -249,9 +252,7 @@ https://segmentfault.com/a/1190000022904663
 
 
 
-#### 9.synchronized
-
-原理：
+#### 9.synchronized原理（待完善）
 
 - synchronized同步语句块使⽤的是 monitorenter 和 monitorexit 指令，其中 monitorenter指令指向同步代码块的开始位置，monitorexit 指令则指明同步代码块的结束位置。当执行monitorenter时线程会试图获取monitor（monitor对象存在于每个Java对象的对象头中）。当计数器为零时就可成功获取，然后计数器+1。执行monitorexist指令时，锁计数器-1，当计数器为0时表示锁被释放。如果获取锁失败线程就会阻塞。
 - synchronized修饰同步方法时是通过ACC_SYNCHRONIZED标识来指明该方法是一个同步方法。
@@ -292,7 +293,7 @@ https://segmentfault.com/a/1190000022904663
 
   corePoolSize为1；maximumPoolSize为1；keepAliveTime为0L；unit为TimeUnit.MILLISECONDS；workQueue为LinkedBlockingQueue；适用于一个任务一个任务执行的场景。
 
-- NewScheduledThreadPool
+- newScheduledThreadPool
 
   corePoolSize为传递来的参数，maximumPoolSize为Integer.MAX_VALUE；keepAliveTime为0；unit为：TimeUnit.NANOSECONDS；workQueue为：new DelayedWorkQueue() 一个按超时时间升序排序的队列；适合周期性任务。
 
