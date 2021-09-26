@@ -1792,6 +1792,13 @@ RocketMQ采用了局部顺序一致性的机制，实现了单个队列中的消
 如果broker主动推送消息的话有可能push速度快，消费速度慢的情况，那么就会造成消息在 Consumer 端堆积过多，同时又不能被其他 Consumer 消费的情况。而 pull 的方式可以根据当前自身情况来 pull，不会造成过多的压力而造成瓶颈。所以采取了 pull 的方式。
 
 
+
+### 7. RocketMQ如何保证消息不丢失
+
+1. producer：默认同步发送，发送完后等待broker响应，若超时未收到响应会重发。
+2. broker：开启同步刷盘模式会等消息刷盘后再返回producer成功，同时开启主从复制，等slave也将消息刷盘后broker才会返回producer成功。
+3. consumer：消费成功后才返回给broker ack，若消息消费失败会重试。
+
 ----
 
 ## Chapter 9 算法
