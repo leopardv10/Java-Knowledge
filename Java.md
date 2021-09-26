@@ -372,7 +372,11 @@ https://zhuanlan.zhihu.com/p/52845869
 
 - 引用计数：给对象中添加一个计数器，每当被引用时计数器+1，引用失效计数器-1，当计数器为0时该对象即不能再被使用。
 
+  
+  
   > 哪些对象可作为GC Roots：
+  >
+  > 
   >
   > 栈和方法区里引用到的对象
 
@@ -409,9 +413,13 @@ https://zhuanlan.zhihu.com/p/52845869
 
 #### 5.类加载过程
 
-> 定义：举个通俗点的例子来说，JVM在执行某段代码时，遇到了class A， 然而此时内存中并没有class A的相关信息，于是JVM就会到相应的class文件中去寻找class A的类信息，并加载进内存中，这就是我们所说的类加载过程。
+1. 定义：举个通俗点的例子来说，JVM在执行某段代码时，遇到了class A， 然而此时内存中并没有class A的相关信息，于是JVM就会到相应的class文件中去寻找class A的类信息，并加载进内存中，这就是我们所说的类加载过程。
 
-编译即把Java文件编译成字节码文件（.class文件），运行则是把编译生成的.class文件交给JVM运行。而类加载指的是JVM把.class文件中类信息加载进内存并解析生成对应的class对象的过程。
+   编译即把Java文件编译成字节码文件（.class文件），运行则是把编译生成的.class文件交给JVM运行。而类加载指的是JVM把.class文件中类信息加载进内存并解析生成对应的class对象的过程。
+
+   
+
+2. 步骤
 
 - 加载：把.class文件通过类加载器加载到内存中
 
@@ -444,7 +452,7 @@ https://zhuanlan.zhihu.com/p/52845869
 
 - System.gc()方法的调用：调用System.gc()方法会建议JVM进行Full GC，但注意这只是建议，JVM执行不执行是另外一回事儿，不过在大多数情况下会增加Full GC的次数，导致系统性能下降，一般建议不要手动进行此方法的调用，可以通过-XX:+ DisableExplicitGC来禁止RMI调用System.gc。
 - 老年代空间不足
-- Metaspace区内存不足
+- Metaspace区（存放类的元数据）内存不足
 
 
 
@@ -454,13 +462,13 @@ JDK1.8默认使用**Parallel Scanvage** + **Parallel Old**
 
 <img src="https://img-blog.csdnimg.cn/20200304160245276.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMzMzY2MjI5,size_16,color_FFFFFF,t_70" alt="img" style="zoom:80%;" />
 
-新生代垃圾收集器：
+1. 新生代垃圾收集器：
 
 - Serial: 单线程垃圾回收, 复制算法
 - ParNew: 多线程垃圾回收，复制算法
 - Parallel Scanvenge: 关注吞吐量，用户代码运行时间和cpu运行总时间比值
 
-老年代垃圾收集器：
+2. 老年代垃圾收集器：
 
 - Serial Old:  标记整理
 
@@ -472,7 +480,15 @@ JDK1.8默认使用**Parallel Scanvage** + **Parallel Old**
 
 - ![image-20210715234252055](C:\Users\leopa\AppData\Roaming\Typora\typora-user-images\image-20210715234252055.png)
 
-G1收集器：
+  > CMS的缺点：
+  >
+  > 
+  >
+  > 1. 对CPU资源敏感
+  > 2. 无法处理浮动垃圾
+  > 3. 使用标记清除有空间碎片
+
+3. G1收集器：
 
 
 
@@ -513,7 +529,7 @@ void method(){
 
 
 
-#### 10.Java对象创建过程
+#### 10.Java对象创建过程（待完善）
 
 ![image-20210715221914725](C:\Users\leopa\AppData\Roaming\Typora\typora-user-images\image-20210715221914725.png)
 
@@ -522,6 +538,12 @@ void method(){
 - 初始化零值
 - 设置对象头
 - 执行init方法
+
+
+
+#### 11.堆内存的划分
+
+
 
 --------
 
