@@ -541,9 +541,14 @@ void method(){
 
 
 
-#### 11.堆内存的划分
+#### 11.对象从新生代到老年代的过程
 
+![image-20211017175838351](C:\Users\leopa\AppData\Roaming\Typora\typora-user-images\image-20211017175838351.png)
 
+1. 创建对象时优先分配在Eden区，对于大对象则直接进入老年代。
+2. 当Eden区空间不够时会触发Minor GC，Eden区的存活对象会进入From Survivor区。
+3. From Survivor和To Survivor的存在是因为新生代垃圾回收采用的是复制算法。
+4. 对象在Survivor区每熬过一次Minor GC年龄会+1，当达到阈值后就会晋升到老年代中。
 
 --------
 
@@ -797,7 +802,7 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 
 
 
-### 7.SQL语句的执行过程
+### 7. SQL语句的执行过程
 
 1. 连接器，负责与客户端通信
 2. 查询缓存，检查之前是否执行过该语句，缓存里有无结果
@@ -813,9 +818,9 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 - truncate是删除表中所有数据，且无法恢复
 - delete可以加where语句
 
----------
 
----
+
+
 
 ## *Chapter 3 Redis*
 
