@@ -140,7 +140,7 @@ Java内存模型规定了所有的变量都存储在主内存中，每条线程�
 
 - put操作的过程
 
-  首先计算key的hashcode，再用map.size()- 1和 hashcode进行二进制按位与运算出其在数组中对应的位置，如果当前位置存在与插入数据相同的元素就覆盖，不存在则尾插。（头插多线程会出现循环链表）
+  首先计算key的hashcode，再用map.size() - 1和 hashcode进行二进制按位与运算出其在数组中对应的位置，如果当前位置存在与插入数据相同的元素就覆盖，不存在则尾插。（头插多线程会出现循环链表）
 
 - 为何长度是2的幂次方？
 
@@ -439,7 +439,7 @@ https://zhuanlan.zhihu.com/p/52845869
 
 ![preview](https://segmentfault.com/img/bVcHO1F/view)
 
-类加载接收到类加载请求时，首先会请求⽗类加载器去处理，因此所有的请求最终都应该传送到顶层的启动类加载器 BootstrapClassLoader 中。当⽗类加载器无法处理时，才由自己来处理。
+类加载器接收到类加载请求时，首先会请求⽗类加载器去处理，因此所有的请求最终都应该传送到顶层的启动类加载器 BootstrapClassLoader 中。当⽗类加载器无法处理时，才由自己来处理。
 
 好处：
 
@@ -472,7 +472,7 @@ JDK1.8默认使用**Parallel Scanvage** + **Parallel Old**
 
 - Serial Old:  标记整理
 
-- Paraller Old: 标记整理
+- Parallel Old: 标记整理
 
 - CMS: 初始标记->并发标记->重新标记->并发清除
 
@@ -635,10 +635,10 @@ explain语句显示的字段: id, select_type, table, type, possible_keys, keys,
 
   - index：索引全表扫描，把整个索引树全部查一遍
 
-  - possible_keys, keys
+- possible_keys, keys
 
-    理论上用到的索引，实际用到的索引。
-
+  理论上用到的索引，实际用到的索引。
+  
 - key_len
 
   索引字段的最大可能长度，并非实际长度。
@@ -655,9 +655,7 @@ explain语句显示的字段: id, select_type, table, type, possible_keys, keys,
 
 ### 3.索引
 
-
-
-#### 3.1索引分类
+#### 3.1 索引分类
 
 - 普通索引：无任何限制
 
@@ -818,15 +816,9 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 
 
 
-
-
 ## *Chapter 3 Redis*
 
------
-
----
-
-
+----------
 
 ### 1.Redis 为什么快
 
@@ -834,7 +826,7 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 - 采用单线程，避免了CPU上下文切换，加锁释放锁的消耗，也不会出现死锁的情况；
 - 使用 I/O多路复用模型，非阻塞 IO；
 
---------------------------
+
 
 ###  2.Redis多线程
 
@@ -844,7 +836,7 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 
   https://www.cnblogs.com/hollischuang/p/14535826.html
 
-----
+
 
 ### 3.Redis作用
 
@@ -854,7 +846,7 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 - 分布锁：可以利用Redis的setnx功能来编写分布式的锁，如果设置返回1说明获取锁成功，否则获取锁失败，实际应用中要考虑的细节要更多。
 - 消息队列：Redis提供了发布/订阅及阻塞队列功能，能实现一个简单的消息队列系统。另外，这个不能和专业的消息中间件相比。
 
----------------
+
 
 ### 4.Redis持久化机制
 
@@ -868,7 +860,7 @@ Redis持久化就是将内存中的数据写入到磁盘，防止服务宕机导
 
   <img src="C:\Users\leopa\AppData\Roaming\Typora\typora-user-images\image-20210411232734738.png" alt="image-20210411232734738" style="zoom:80%;" />
 
----------------------
+
 
 ### 5.Redis处理过期key
 
@@ -878,7 +870,7 @@ Redis持久化就是将内存中的数据写入到磁盘，防止服务宕机导
 
 - 惰性删除：需要访问一个key的时候才判断其是否过期，过期及删除。
 
------------------------------------
+
 
 ### 6.Redis内存淘汰策略
 
@@ -898,7 +890,7 @@ Redis持久化就是将内存中的数据写入到磁盘，防止服务宕机导
 - volatile-lfu：在设置了过期时间的keys中，移除最不经常使用的key。（一定时间内用的最少）
 - allkeys-lfu：在所有keys中，移除最不经常使用的key。
 
--------------------------------
+
 
 ### 7.Redis事务
 
