@@ -1566,7 +1566,7 @@ C即controller控制器是指控制器接受用户的输入并调用模型和视
 
 #### 2. SpringMVC的执行流程
 
-
+![img](https://upload-images.jianshu.io/upload_images/5220087-3c0f59d3c39a12dd.png?imageMogr2/auto-orient/strip|imageView2/2/w/1002/format/webp)
 
 
 
