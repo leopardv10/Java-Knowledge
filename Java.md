@@ -1170,7 +1170,7 @@ http://redisbook.com/preview/object/hash.html
   使用linkedlist的前提：
 
   - 试图往列表新添加一个字符串值，且字符串的长度超过 `server.list_max_ziplist_value` （默认值为 `64` ）。
-  - `ziplist` 包含的节点超过 `server.list_max_ziplist_entries` （默认值为 `512` ）。
+  - `ziplist` 包含的节点超过 `server.list_max_ziplist_entries` （默认值为 `512` ）。 
 
 -------
 
