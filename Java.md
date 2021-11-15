@@ -6,7 +6,7 @@
 
 ### Java基础
 
----------
+
 
 #### 1.构造器是否能被重写
 
@@ -21,7 +21,7 @@
 #### 2.接口和抽象类区别
 
 - 接口中的方法不能被实现，而抽象类可以有非抽象方法
-- 接口只能由static，final修饰的变量，而抽象类则不一定
+- 接口只能有static，final修饰的变量，而抽象类则不一定
 - 一个类可以实现多个接口，但只能实现一个抽象类。接口本身还可以extends接口
 
 
@@ -93,7 +93,7 @@ Java内存模型规定了所有的**全局变量**都存储在主内存中，每
 在Java中所有异常都有一个共同父类Throwable，Throwable有两个重要的子类Exception和Error。
 
 - Exception：程序本身可以处理的异常。
-  - 受检查异常：编译过程中如何没有catch/throw的话无法通过编译，如：IOException。
+  - 受检查异常：编译过程中如果没有catch/throw的话无法通过编译，如：IOException。
   - 不受检查异常：RuntimeException，包括NullPointException，IndexOutOfBoundException等。
 - Error：程序无法处理的错误，无法用catch捕获。
 
@@ -101,13 +101,15 @@ Java内存模型规定了所有的**全局变量**都存储在主内存中，每
 
 ### 集合
 
------------
+
 
 #### 1.要求线程安全时用什么List
 
 - Vector：所有方法都用synchronized修饰
-- SynchronizedList：使用同步代码块的方式，效率比vector高
+- SynchronizedList：使用同步代码块的方式，效率比vector高，Collections.synchronizedList()
 - CopyOnWriteArrayList：写时加锁，读不加锁
+
+> CopyOnArrayList并不是完全线程安全：https://www.cnblogs.com/twoheads/p/10688196.html
 
 
 
@@ -120,7 +122,14 @@ Java内存模型规定了所有的**全局变量**都存储在主内存中，每
 <img src="https://segmentfault.com/img/remote/1460000024432654" alt="img" style="zoom:80%;" />
 
 2. JDK1.8：采用CAS机制和synchronized关键字
-   - CAS：put数据时首先计算出对应位置，如果当前这个位置的Node为null，则通过CAS方式的方法写入。所谓的CAS，即即compareAndSwap，执行CAS操作的时候，将内存位置的值与预期原值比较，如果相匹配，那么处理器会自动将该位置值更新为新值，否则，处理器不做任何操作。
+   - CAS：put数据时首先计算出对应位置，如果当前这个位置的Node为null，则通过CAS方式的方法写入。所谓的CAS，即compareAndSwap，执行CAS操作的时候，将内存位置的值与预期原值比较，如果相匹配，那么处理器会自动将该位置值更新为新值，否则，处理器不做任何操作。
+   
+   > <font color="yellow">cas的缺点：</font>
+   >
+   > 
+   
+   
+   
    - synchronized：当头结点不为null时，则使用该头结点加锁，这样就能多线程去put hashCode相同的时候不会出现数据丢失的问题。
 
 >为什么头节点不为空时用synchronized而不是cas？
@@ -1554,7 +1563,7 @@ Spring的Bean默认是单例模式，因此当存在全局变量时是存在线�
 
 #### 1. MVC是什么？
 
-MVC的全名是Model View Controller，是模型(model)－视图(view)－控制器(controller)的缩写，是一种软件设计典范。它是用一种业务逻辑、数据与界面显示分离的方法来组织代码，将众多的业务逻辑聚集到一个部件里面，在需要改进和个性化定制界面及用户交互的同时，不需要重新编写业务逻辑，达到减少编码的时间。
+MVC的全名是Model View Controller，是模型(model)－视图(view)－控制器(controller)的缩写，是一种软件设计典范。它是用一种<font color='yellow'>业务逻辑</font>、<font color = 'yellow'>数据</font>与<font color ='yellow'>界面显示</font>分离的方法来组织代码，将众多的业务逻辑聚集到一个部件里面，在需要改进和个性化定制界面及用户交互的同时，不需要重新编写业务逻辑，达到减少编码的时间。
 
 V即View视图是指用户看到并与之交互的界面。比如由html元素组成的网页界面，或者软件的客户端界面。MVC的好处之一在于它能为应用程序处理很多不同的视图。在视图中其实没有真正的处理发生，它只是作为一种输出数据并允许用户操纵的方式。
 
@@ -1566,9 +1575,9 @@ C即controller控制器是指控制器接受用户的输入并调用模型和视
 
 #### 2. SpringMVC的执行流程
 
+![img](https://upload-images.jianshu.io/upload_images/5220087-3c0f59d3c39a12dd.png?imageMogr2/auto-orient/strip|imageView2/2/w/1002/format/webp)
 
-
-
+DispatcherServlet相当于一个调度中心，接收到客户端请求后，通过HandlerMapping找到对应的handler（Controller），再由HandlerAdapter调用对应的Handler。（适配器模式）
 
 ----------------------
 
@@ -2064,7 +2073,7 @@ public class UserDaoProxy implements IUserDao{
 
 RocketMQ采用了局部顺序一致性的机制，实现了单个队列中的消息严格有序。也就是说，如果想要保证顺序消费，必须将一组消息发送到同一个队列中，然后再由消费者进行注意消费。
 
-9
+
 
 ### 6. 为什么RocketMQ采用pull消息的方式而不是push
 
