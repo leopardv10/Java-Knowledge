@@ -1198,7 +1198,7 @@ http://redisbook.com/preview/object/hash.html
 
 https://zhuanlan.zhihu.com/p/115912936
 
-
+https://jishuin.proginn.com/p/763bfbd5f0b1
 
 
 
@@ -1543,7 +1543,7 @@ Spring的Bean默认是单例模式，因此当存在全局变量时是存在线�
 解决方法：
 
 1. 使用prototype作用域。
-2. 使用TreadLocal来定义成员变量
+2. 使用ThreadLocal来定义成员变量
 
 
 
