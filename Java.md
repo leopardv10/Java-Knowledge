@@ -1208,7 +1208,7 @@ https://jishuin.proginn.com/p/763bfbd5f0b1
 
 ### 1.TCP协议
 
-#### 1.1三次握手，四次挥手
+#### 1.1 三次握手，四次挥手
 
 SYN表示建立连接，FIN表示关闭连接，ACK表示响应，
 
@@ -1218,7 +1218,7 @@ SYN表示建立连接，FIN表示关闭连接，ACK表示响应，
 
 
 
-#### 1.2四次挥手后客户端为什么进入TIME-WAIT状态
+#### 1.2 四次挥手后客户端为什么进入TIME-WAIT状态
 
 - 第四次挥手的ACK报文可能会丢失，这时服务器会重新断开请求，所以客户端此时还不能关闭连接
 - 让本次连接存留在网络里的报文全部消失，防止下次连接受到本次连接报文的影响
@@ -1229,7 +1229,7 @@ SYN表示建立连接，FIN表示关闭连接，ACK表示响应，
 
 
 
-#### 1.3TCP协议如何保证可靠传输
+#### 1.3 TCP协议如何保证可靠传输
 
 - 应用数据被分割成TCP认为最适合发送的数据块，并对每个数据包编号，让接收方接收到有序数据
 
@@ -1241,7 +1241,7 @@ SYN表示建立连接，FIN表示关闭连接，ACK表示响应，
 
   
 
-#### 1.4拥塞控制
+#### 1.4 拥塞控制
 
 - 慢开始
 
@@ -1263,7 +1263,7 @@ SYN表示建立连接，FIN表示关闭连接，ACK表示响应，
 
 
 
-#### 1.5滑动窗口
+#### 1.5 滑动窗口
 
 https://blog.csdn.net/wdscq1234/article/details/52444277
 
@@ -1271,7 +1271,7 @@ https://www.bilibili.com/video/BV1FE411C7dk?from=search&seid=1662660062762103859
 
 -------
 
-### 2.OSI七层协议
+### 2. OSI七层协议
 
 <img src="C:\Users\leopa\AppData\Roaming\Typora\typora-user-images\image-20210416191124914.png" alt="image-20210416191124914" style="zoom:80%;" />
 
@@ -1286,7 +1286,7 @@ https://www.bilibili.com/video/BV1FE411C7dk?from=search&seid=1662660062762103859
 
 -----
 
-### 3.DNS解析流程
+### 3. DNS解析流程
 
 本地DNS服务器->DNS根服务器->域服务器->域名解析服务器
 
@@ -1298,9 +1298,9 @@ https://www.bilibili.com/video/BV1FE411C7dk?from=search&seid=1662660062762103859
 
 -----------------
 
-### 4.HTTP
+### 4. HTTP
 
-#### 4.1HTTP请求格式
+#### 4.1 HTTP请求格式
 
 - 请求方法+协议版本
 - 请求头：
@@ -1314,7 +1314,7 @@ https://www.bilibili.com/video/BV1FE411C7dk?from=search&seid=1662660062762103859
 
 
 
-#### 4.2HTTP请求过程
+#### 4.2 HTTP请求过程
 
 - DNS解析
 - 建立连接
