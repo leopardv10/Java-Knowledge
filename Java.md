@@ -132,7 +132,7 @@ Java内存模型规定了所有的**全局变量**都存储在主内存中，每
    
    > <font color="yellow">cas的缺点：</font>
    >
-   > 
+   > ABA问题
    
    
    
