@@ -264,6 +264,10 @@ https://blog.csdn.net/vincent_wen0766/article/details/108593587
 
 #### 7.AQS
 
+AQS主要有两个队列：同步队列，条件队列
+
+条件队列存放的是调用了await阻塞的线程，这些线程是不能直接获取资源的，只有从条件队列转移到同步队列后才能获取资源。同步队列存放的是等待获取锁的线程。
+
 
 
 #### 8.synchronized锁升级
@@ -291,9 +295,11 @@ https://segmentfault.com/a/1190000022904663
 
 #### 10.ReentrantLock
 
-原理：
+ReentrantLock内部有静态类：公平锁和非公平锁。
 
+公平锁：state != 0时说明锁被占用，若占用锁的线程不是自身，则该线程会被放入同步队列。若state = 0说明锁被释放，这时按照队列里的等待顺序来获取锁。
 
+非公平锁：state ==0时当前线程直接获取锁，否则调用acquire方法，再次尝试获取锁，若失败的话进入同步队列。
 
 > ReentrantLock和synchronized区别
 
