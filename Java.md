@@ -920,6 +920,8 @@ ACID：原子性（Atomicity），一致性（Consistency），隔离性（Isola
 
 
 
+### 11. bin log, redo log, undo log
+
 ## *Chapter 3 Redis*
 
 ---
@@ -1099,7 +1101,10 @@ eg: setnx key value
 > 解决方案
 
 - 布隆过滤器：判断用户请求的key是否存在，不存在直接返回错误信息给客户端。
+
 - 缓存空对象：将无效的key添加到缓存中去，但是要设置过期时间防止redis中存储大量无效key。
+
+  
 
 #### 3.缓存击穿
 
@@ -1500,11 +1505,11 @@ rollbackfor参数：默认只有RunTimeException时才会回滚，设置为rollb
 
 ##### 3.3 Spring事务隔离级别
 
-1. DEFAULT，这是一个PlatfromTransactionManager默认的隔离级别，使用数据库默认的事务隔离级别.
-2. 读未提交，（read uncommited） ：脏读，不可重复读，幻读都有可能发生
-3. 读已提交，（read commited）：避免脏读。但是不可重复读和幻读有可能发生
-4. 可重复读，（repeatable read） ：避免脏读和不可重复读.但是幻读有可能发生
-5. 可串行化，（serializable） ：避免以上所有读问题
+1. DEFAULT，这是一个PlatfromTransactionManager默认的隔离级别，使用数据库默认的事务隔离级别。
+2. 读未提交，（read uncommited） ：脏读，不可重复读，幻读都有可能发生。
+3. 读已提交，（read commited）：避免脏读。但是不可重复读和幻读有可能发生。
+4. 可重复读，（repeatable read） ：避免脏读和不可重复读.但是幻读有可能发生。
+5. 可串行化，（serializable） ：避免以上所有读问题。
 
 
 
@@ -2017,7 +2022,7 @@ public class UserDaoProxy implements IUserDao{
     
     @Override
     public void save() {
-        System.out.println("开启事务");//扩展了额外功能
+        System.out.println("开启事务"); //扩展了额外功能
         target.save();
         System.out.println("提交事务");
     }
