@@ -2038,6 +2038,18 @@ public class UserDaoProxy implements IUserDao{
 
 
 
+### 策略模式
+
+
+
+### 过滤器模式
+
+
+
+### 责任链模式
+
+
+
 ## Chapter 8 消息队列
 
 ----
